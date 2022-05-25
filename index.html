@@ -18,7 +18,7 @@
       <div class="continer mb-5">
         <nav class="nav">
           <a class="nav-link" href="/">Blog List</a>
-          <a class="nav-link" href="dad.html">Blog Article</a>
+          <a class="nav-link" href="/post.html?id=1">Blog Article</a>
         </nav>
       </div>
       <div class="container">
@@ -69,7 +69,7 @@
           return pagination;
         }
 
-        //получаем элемент UL
+        //получаем элементы UL
         let listGroup = document.getElementById("list-group");
         let listPagination = document.getElementById("pagination");
 
@@ -82,11 +82,6 @@
           `https://gorest.co.in/public-api/posts?page=${pageParams.get("page")}`
         );
         const articles = await response.json();
-        console.log(articles);
-        console.log(articles.data);
-        console.log(articles.meta);
-        //кол-во страниц
-        console.log(articles.meta.pagination.pages);
 
         //добавляем заголовки статей с ссылками в список
         articles.data.forEach((article) => {
