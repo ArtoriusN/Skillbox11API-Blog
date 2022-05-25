@@ -40,7 +40,7 @@
       document.addEventListener("DOMContentLoaded", async function (event) {
         function createarticleLinksList(article) {
           let articleLinkList = document.createElement("li");
-          articleLinkList.innerHTML = `<a href="#">${article.title}</a>`;
+          articleLinkList.innerHTML = `<a href="/post.html?id=${article.id}">${article.title}</a>`;
 
           articleLinkList.classList.add(
             "list-group-item",
