@@ -11,6 +11,7 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="d-flex flex-column min-vh-100">
@@ -23,6 +24,7 @@
       <div class="container">
         <h1 class="header">Blog List</h1>
         <ul class="list-group" id="list-group"></ul>
+        <ul class="pagination" id="pagination"></ul>
       </div>
       <footer class="mt-auto container py-3 my-4">
         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
@@ -38,10 +40,10 @@
     <script>
       //создаем элемент статьи в списке - заголовок ссылка
       document.addEventListener("DOMContentLoaded", async function (event) {
+        //создаем строку с ссылкой в DOM
         function createarticleLinksList(article) {
           let articleLinkList = document.createElement("li");
           articleLinkList.innerHTML = `<a href="/post.html?id=${article.id}">${article.title}</a>`;
-
           articleLinkList.classList.add(
             "list-group-item",
             "d-flex",
@@ -50,20 +52,52 @@
           );
           return articleLinkList;
         }
+        //создаем элемент пагинации в DOM
+        function createaPagination(page) {
+          let pagination = document.createElement("li");
+          if (page + 1 === 1) {
+            pagination.innerHTML = `<a class="page-link" href="/index.html">${
+              page + 1
+            }</a>`;
+          } else {
+            pagination.innerHTML = `<a class="page-link" href="/index.html?page=${
+              page + 1
+            }">${page + 1}</a>`;
+          }
+
+          pagination.classList.add("page-item");
+          return pagination;
+        }
+
         //получаем элемент UL
         let listGroup = document.getElementById("list-group");
+        let listPagination = document.getElementById("pagination");
+
+        //Получаем номер страницы пагинации. Пример http://127.0.0.1:5500/index.html?page=2
+        const pageParams = new URLSearchParams(window.location.search);
+        console.log(pageParams.get("page")); // "2"
 
         //получаем список 20 статей
-        const response = await fetch("https://gorest.co.in/public-api/posts");
+        const response = await fetch(
+          `https://gorest.co.in/public-api/posts?page=${pageParams.get("page")}`
+        );
         const articles = await response.json();
         console.log(articles);
         console.log(articles.data);
+        console.log(articles.meta);
+        //кол-во страниц
+        console.log(articles.meta.pagination.pages);
 
         //добавляем заголовки статей с ссылками в список
         articles.data.forEach((article) => {
-          const articleLinkList = createarticleLinksList(article);
-          listGroup.append(articleLinkList);
+          const articleLink = createarticleLinksList(article);
+          listGroup.append(articleLink);
         });
+        //делаем пагинацию
+        for (let index = 0; index < articles.meta.pagination.pages; index++) {
+          const paginationItem = createaPagination(index);
+          listPagination.append(paginationItem);
+        }
       });
     </script>
   </body>
