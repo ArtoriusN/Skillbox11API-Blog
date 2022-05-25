@@ -41,6 +41,9 @@
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", async function (event) {
+        // {"code":200,
+        // "meta":{"pagination":{"total":2,"pages":1,"page":1,"limit":20}},
+        // "data":[{"id":4,"post_id":6,"name":"Ms. Kanchan Patel","email":"patel_kanchan_ms@hessel.info","body":"Vitae harum iusto. Facilis assumenda quia. Autem ex perspiciatis."},{"id":3,"post_id":6,"name":"Kalpana Shah","email":"shah_kalpana@wilderman-paucek.info","body":"Voluptatem quis quis."}]}
         //создаем контент статьи
         function createPageContent({ title, body }) {
           let header = document.getElementById("header");
@@ -48,6 +51,25 @@
           let paragraph = document.getElementById("paragraph");
           paragraph.textContent = body;
           document.title = title;
+        }
+
+        //добавляем комментарии к статье
+        function createComment({ name, body }) {
+          let commentAutor = document.createElement("li");
+          commentAutor.classList.add(
+            "list-group-item",
+            "d-flex",
+            "align-items-center"
+          );
+          commentAutor.innerHTML = `<b>Author:</b>&nbsp ${name}`;
+          let commentList = document.createElement("li");
+          commentList.classList.add(
+            "list-group-item",
+            "d-flex",
+            "align-items-center"
+          );
+          commentList.innerHTML = `<b>Comment:</b>&nbsp ${body}`;
+          return { commentAutor, commentList };
         }
 
         //получаем контент страницы
@@ -63,6 +85,31 @@
         const article = await response.json();
         //добавляем контент в DOM
         let pageContent = createPageContent(article.data);
+
+        //Получаем комментарии из API. Пример https://gorest.co.in/public-api/comments?post_id=6
+        const commentResponse = await fetch(
+          `https://gorest.co.in/public-api/comments?post_id=${idParams.get(
+            "id"
+          )}`
+        );
+        const comments = await commentResponse.json();
+        console.log(comments);
+        console.log(comments.data);
+
+        let commentsUl = document.getElementById("list-group");
+
+        //перебираем и добавляем комментарии
+        comments.data.map((item) => {
+          console.log(item);
+          commentList = createComment(item);
+          commentsUl.append(commentList.commentAutor);
+          commentsUl.append(commentList.commentList);
+        });
+        // comments.data.forEach((comment) => {
+        //   commentList = createComment(comment);
+        //   commentsUl.append(commentList.commentAutor);
+        //   commentsUl.append(commentList.commentList);
+        // });
       });
     </script>
   </body>
